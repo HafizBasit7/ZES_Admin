@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { EditCategoryModal } from '@/components/categories/edit-category-modal';
 import {
   Plus,
   Search,
@@ -50,6 +51,9 @@ export default function CategoriesPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
 
   useEffect(() => {
     fetchData();
@@ -98,6 +102,38 @@ export default function CategoriesPage() {
     }
   };
 
+const handleSaveCategory = async (updatedCategory: Category) => {
+  try {
+    const url = `/api/admin/categories/${updatedCategory._id}`;
+    console.log('Making PUT request to:', url);
+    console.log('Data being sent:', updatedCategory);
+
+    const response = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updatedCategory),
+    });
+
+    console.log('Response status:', response.status);
+    
+    const data = await response.json();
+    console.log('Response data:', data);
+
+    if (response.ok && data.success) {
+      setCategories(categories.map(cat =>
+        cat._id === updatedCategory._id ? { ...cat, ...data.category } : cat
+      ));
+    } else {
+      alert(data.message || 'Error updating category');
+    }
+  } catch (error) {
+    console.error('Error updating category:', error);
+    alert('Error updating category');
+  }
+};
+
   const handleDelete = async (categoryId: string) => {
     const category = categories.find(cat => cat._id === categoryId);
     
@@ -132,29 +168,33 @@ export default function CategoriesPage() {
     }
   };
 
-  const handleStatusToggle = async (categoryId: string, currentStatus: boolean) => {
-    try {
-      const response = await fetch(`/api/admin/categories/${categoryId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          isActive: !currentStatus
-        }),
-      });
+ const handleStatusToggle = async (categoryId: string, currentStatus: boolean) => {
+  try {
+    const response = await fetch(`/api/admin/categories/${categoryId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        isActive: !currentStatus
+      }),
+    });
 
-      if (response.ok) {
-        setCategories(categories.map(cat =>
-          cat._id === categoryId
-            ? { ...cat, isActive: !currentStatus }
-            : cat
-        ));
-      }
-    } catch (error) {
-      console.error('Error updating category status:', error);
+    const data = await response.json();
+
+    if (response.ok && data.success) {
+      setCategories(categories.map(cat =>
+        cat._id === categoryId
+          ? { ...cat, isActive: !currentStatus }
+          : cat
+      ));
+    } else {
+      alert(data.message || 'Error updating category status');
     }
-  };
+  } catch (error) {
+    console.error('Error updating category status:', error);
+  }
+};
 
   const filteredCategories = categories
     .filter(category =>
@@ -298,12 +338,12 @@ export default function CategoriesPage() {
             <div className="flex gap-2">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="flex items-center space-x-2">
+                  <Button  className="flex items-center space-x-2">
                     <Filter className="h-4 w-4" />
                     <span>Status: {statusFilter === 'all' ? 'All' : statusFilter}</span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent>
+                <DropdownMenuContent className="bg-white text-gray-800 border border-gray-200 shadow-lg">
                   <DropdownMenuItem onClick={() => setStatusFilter('all')}>
                     All Categories
                   </DropdownMenuItem>
@@ -323,7 +363,7 @@ export default function CategoriesPage() {
       {/* Categories List */}
       <Card className="border-gray-200 shadow-sm">
         <CardHeader className="flex flex-row items-center justify-between pb-4">
-          <CardTitle className="text-lg font-semibold">
+          <CardTitle className="text-lg font-medium text-gray-900">
             Categories ({filteredCategories.length})
           </CardTitle>
           {emptyCategories > 0 && (
@@ -422,12 +462,21 @@ export default function CategoriesPage() {
                       >
                         {category.isActive ? 'Deactivate' : 'Activate'}
                       </Button>
-                      <Link href={`/dashboard/categories/${category._id}/edit`}>
-                        <Button variant="outline" size="sm">
-                          <Edit className="h-4 w-4 mr-2" />
-                          Edit
-                        </Button>
-                      </Link>
+                      {/* <Link href={`/dashboard/categories/${category._id}/edit`}> */}
+                       <Button 
+
+  size="sm"
+  onClick={() => {
+    setEditingCategory(category);
+    setIsEditModalOpen(true);
+  }}
+>
+  <Edit className="h-4 w-4 mr-2" />
+  Edit
+</Button>
+
+
+                      {/* </Link> */}
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="outline" size="sm">
@@ -462,6 +511,15 @@ export default function CategoriesPage() {
           )}
         </CardContent>
       </Card>
+      <EditCategoryModal
+  isOpen={isEditModalOpen}
+  onClose={() => {
+    setIsEditModalOpen(false);
+    setEditingCategory(null);
+  }}
+  category={editingCategory}
+  onSave={handleSaveCategory}
+/>
     </div>
   );
 }

@@ -69,7 +69,7 @@ export default function DashboardLayout({
               <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                 <Zap className="h-5 w-5 text-white" />
               </div>
-              <span className="ml-3 text-lg font-bold text-gray-900">ZES Admin</span>
+              <span className="ml-3 text-lg font-bold text-gray-900">VoltWise Admin</span>
             </div>
             <nav className="mt-8 px-2 space-y-1">
               {navigation.map((item) => {
