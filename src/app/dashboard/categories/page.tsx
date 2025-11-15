@@ -41,7 +41,7 @@ interface Category {
 
 interface Product {
   _id: string;
-  category: string;
+  category: string | { _id: string };
 }
 
 export default function CategoriesPage() {
@@ -82,17 +82,24 @@ export default function CategoriesPage() {
       setProducts(productsList);
 
       // Calculate product counts for each category
-      const categoriesWithCounts = categoriesList.map((category: Category) => {
-        const productCount = productsList.filter((product: Product) => 
-          product.category === category._id || 
-          product.category?._id === category._id
-        ).length;
+     const categoriesWithCounts = categoriesList.map((category: Category) => {
+  const productCount = productsList.filter((product: Product) => {
+    if (!product?.category) return false;
 
-        return {
-          ...category,
-          productCount
-        };
-      });
+    const categoryId =
+      typeof product.category === "string"
+        ? product.category
+        : product.category._id;
+
+    return categoryId === category._id;
+  }).length;
+
+  return {
+    ...category,
+    productCount
+  };
+});
+
 
       setCategories(categoriesWithCounts);
     } catch (error) {
