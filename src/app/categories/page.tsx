@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { getCategories } from '../actions';
 
@@ -27,16 +28,33 @@ export default async function CategoriesPage() {
               href={`/categories/${category.slug}`}
               className="group"
             >
-              <div className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group-hover:scale-105">
-                <div className="h-48 bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-                  <CategoryIcon category={category} />
+              <div className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group-hover:scale-105 h-full flex flex-col">
+                {/* Category Image */}
+                <div className="h-48 bg-gray-100 relative overflow-hidden">
+                  {category.image ? (
+                    <Image
+                      src={category.image}
+                      alt={category.name}
+                      fill
+                      className="object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                      <CategoryFallbackIcon category={category} />
+                    </div>
+                  )}
+                  {/* Overlay */}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
                 </div>
-                <div className="p-6">
+                
+                <div className="p-6 flex-1 flex flex-col">
                   <h3 className="text-xl font-bold text-gray-900 mb-2">{category.name}</h3>
-                  <p className="text-gray-600 mb-4">{category.description}</p>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-500">{category.productsCount || 0} products</span>
-                    <Button variant="outline" size="sm">
+                  <p className="text-gray-600 mb-4 flex-1">{category.description}</p>
+                  <div className="flex justify-between items-center mt-auto">
+                    <span className="text-sm text-gray-500">
+                      {category.productsCount || 0} product{category.productsCount !== 1 ? 's' : ''}
+                    </span>
+                    <Button variant="outline" size="sm" className="group-hover:bg-blue-600 group-hover:text-white transition-colors">
                       View All
                     </Button>
                   </div>
@@ -45,18 +63,31 @@ export default async function CategoriesPage() {
             </Link>
           ))}
         </div>
+
+        {/* Empty State */}
+        {activeCategories.length === 0 && (
+          <div className="text-center py-12">
+            <div className="bg-white rounded-2xl p-8 max-w-md mx-auto">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Categories Available</h3>
+              <p className="text-gray-600">Check back soon for our product categories.</p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
-// Category Icon Component
-function CategoryIcon({ category }: { category: any }) {
-  const iconProps = { className: "h-16 w-16 text-white" };
+// Fallback icon for categories without images
+function CategoryFallbackIcon({ category }: { category: any }) {
+  const iconProps = { className: "h-12 w-12 text-white" };
   
-  // Map category names to icons
- const categoryIcons: Record<string, React.ReactNode> = {
-
+  const categoryIcons: Record<string, React.ReactNode> = {
     'wires': <CableIcon {...iconProps} />,
     'cables': <CableIcon {...iconProps} />,
     'switches': <SwitchIcon {...iconProps} />,
@@ -80,7 +111,7 @@ function CategoryIcon({ category }: { category: any }) {
   return matchedIcon ? categoryIcons[matchedIcon] : categoryIcons.default;
 }
 
-// Icon components
+// Icon components (keep these as fallback)
 function CableIcon(props: any) { 
   return (
     <svg {...props} fill="none" stroke="currentColor" viewBox="0 0 24 24">

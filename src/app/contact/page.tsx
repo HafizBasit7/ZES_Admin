@@ -52,8 +52,8 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900">Phone</h3>
-                    <p className="text-gray-600">+1 (555) 123-4567</p>
-                    <p className="text-gray-600">+1 (555) 987-6543</p>
+                    <p className="text-gray-600">0300-5791244</p>
+                    {/* <p className="text-gray-600">+1 (555) 987-6543</p> */}
                   </div>
                 </div>
 
@@ -63,8 +63,8 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900">Email</h3>
-                    <p className="text-gray-600">sales@voltwise.com</p>
-                    <p className="text-gray-600">support@voltwise.com</p>
+                    <p className="text-gray-600">zahidelectric@zes.com</p>
+                    {/* <p className="text-gray-600">support@voltwise.com</p> */}
                   </div>
                 </div>
 
@@ -75,9 +75,9 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-semibold text-gray-900">Address</h3>
                     <p className="text-gray-600">
-                      123 Electric Avenue<br />
-                      Power City, PC 12345<br />
-                      United States
+                      Zahid Electric Store,<br />
+                      Bazar Topan Wala<br />
+                      D.I.Khan
                     </p>
                   </div>
                 </div>
@@ -101,7 +101,7 @@ export default function ContactPage() {
               <div className="mt-8 p-4 bg-red-50 border border-red-200 rounded-lg">
                 <h3 className="font-semibold text-red-900 mb-2">Emergency Electrical Service</h3>
                 <p className="text-red-700 text-sm mb-2">Available 24/7 for urgent electrical issues</p>
-                <p className="text-red-900 font-bold">+1 (555) 911-ELECTRIC</p>
+                <p className="text-red-900 font-bold">0966-713244</p>
               </div>
             </div>
           </div>

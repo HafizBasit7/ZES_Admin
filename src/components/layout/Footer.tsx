@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Facebook, Twitter, Instagram, Mail, Phone, MapPin } from 'lucide-react';
-
+import { Button } from '@/components/ui/button';
 export function Footer() {
   return (
     <footer className="bg-gray-900 text-white">
@@ -74,6 +74,11 @@ export function Footer() {
           <p className="text-gray-400 text-sm">
             © 2025 Zahid Electric Store. All rights reserved.
           </p>
+          {/* <Link href="/login">
+              <Button variant="outline" size="sm" className="hidden md:flex">
+                Admin
+              </Button>
+            </Link>  */}
           <div className="flex space-x-6 mt-4 md:mt-0">
             <Link href="/privacy" className="text-gray-400 hover:text-white text-sm transition-colors">
               Privacy Policy
@@ -81,8 +86,8 @@ export function Footer() {
             <Link href="/terms" className="text-gray-400 hover:text-white text-sm transition-colors">
               Terms of Service
             </Link>
-            <Link href="/shipping" className="text-gray-400 hover:text-white text-sm transition-colors">
-              Shipping Policy
+            <Link href="/login" className="text-gray-400 hover:text-white text-sm transition-colors">
+              ZES
             </Link>
           </div>
         </div>

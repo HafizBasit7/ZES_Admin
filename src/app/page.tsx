@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { ProductGrid } from '@/components/products/ProductGrid';
 import { Shield, Truck, Clock, Award, Zap, Sparkles, Battery, Cpu, Store } from 'lucide-react';
@@ -90,10 +91,6 @@ export default async function Home() {
       <section className="bg-gradient-to-b from-gray-50 to-white py-16">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
-            {/* <div className="inline-flex items-center gap-2 bg-yellow-50 text-yellow-600 px-4 py-2 rounded-full text-sm font-medium mb-4">
-              <Sparkles className="h-4 w-4" />
-              ZES Featured Products
-            </div> */}
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Best-Selling Electrical Products
             </h2>
@@ -125,7 +122,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Categories Section - Modern Design */}
+      {/* Categories Section - Modern Design with Actual Images */}
       <section className="bg-white py-16">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
@@ -148,12 +145,25 @@ export default async function Home() {
                 href={`/categories/${category.slug}`}
                 className="group"
               >
-                <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl p-6 text-center hover:shadow-xl transition-all duration-300 group-hover:scale-105 border border-blue-100">
-                  <div className="w-16 h-16 mx-auto mb-4 bg-white rounded-xl flex items-center justify-center group-hover:bg-blue-50 transition-colors shadow-sm">
-                    <CategoryIcon category={category} />
+                <div className="bg-white rounded-2xl p-4 text-center hover:shadow-xl transition-all duration-300 group-hover:scale-105 border border-gray-200 h-full flex flex-col">
+                  {/* Category Image */}
+                  <div className="w-20 h-20 mx-auto mb-4 bg-gray-100 rounded-xl overflow-hidden flex items-center justify-center group-hover:bg-blue-50 transition-colors">
+                    {category.image ? (
+                      <Image
+                        src={category.image}
+                        alt={category.name}
+                        width={80}
+                        height={80}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                        <CategoryFallbackIcon category={category} />
+                      </div>
+                    )}
                   </div>
-                  <h3 className="font-semibold text-gray-900 text-sm md:text-base">{category.name}</h3>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <h3 className="font-semibold text-gray-900 text-sm md:text-base mb-1">{category.name}</h3>
+                  <p className="text-xs text-gray-500">
                     {category.productsCount || 0} products
                   </p>
                 </div>
@@ -172,8 +182,65 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* About ZES Section */}
+      {/* Alternative Categories Layout - Larger Cards with Images */}
       <section className="bg-gray-50 py-16">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Explore Our Product Range
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Discover our comprehensive collection of electrical products
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {activeCategories.slice(0, 3).map((category) => (
+              <Link
+                key={category._id}
+                href={`/categories/${category.slug}`}
+                className="group"
+              >
+                <div className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group-hover:scale-105 h-full flex flex-col">
+                  {/* Large Category Image */}
+                  <div className="h-48 bg-gray-100 relative overflow-hidden">
+                    {category.image ? (
+                      <Image
+                        src={category.image}
+                        alt={category.name}
+                        fill
+                        className="object-cover group-hover:scale-110 transition-transform duration-300"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                        <CategoryFallbackIcon category={category} className="h-16 w-16 text-white" />
+                      </div>
+                    )}
+                    {/* Overlay */}
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
+                  </div>
+                  
+                  <div className="p-6 flex-1 flex flex-col">
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">{category.name}</h3>
+                    <p className="text-gray-600 mb-4 flex-1 text-sm">{category.description}</p>
+                    <div className="flex justify-between items-center mt-auto">
+                      <span className="text-sm text-gray-500">
+                        {category.productsCount || 0} product{category.productsCount !== 1 ? 's' : ''}
+                      </span>
+                      <Button variant="outline" size="sm" className="group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                        Explore
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* About ZES Section */}
+      <section className="bg-white py-16">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -250,14 +317,11 @@ export default async function Home() {
   );
 }
 
-// ... (keep the same CategoryIcon and other icon components from previous code)
-
-// Category Icon Component
-function CategoryIcon({ category }: { category: any }) {
-  const iconProps = { className: "h-8 w-8 text-blue-600" };
+// Fallback icon for categories without images
+function CategoryFallbackIcon({ category, className }: { category: any; className?: string }) {
+  const iconProps = { className: className || "h-8 w-8 text-white" };
   
-  // Map category names to icons
-  const categoryIcons: { [key: string]: JSX.Element } = {
+  const categoryIcons: Record<string, React.ReactNode> = {
     'wires': <CableIcon {...iconProps} />,
     'cables': <CableIcon {...iconProps} />,
     'switches': <SwitchIcon {...iconProps} />,
@@ -281,7 +345,7 @@ function CategoryIcon({ category }: { category: any }) {
   return matchedIcon ? categoryIcons[matchedIcon] : categoryIcons.default;
 }
 
-// Icon components
+// Icon components (keep as fallback)
 function CableIcon(props: any) { 
   return (
     <svg {...props} fill="none" stroke="currentColor" viewBox="0 0 24 24">
