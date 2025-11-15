@@ -55,7 +55,8 @@ function CategoryIcon({ category }: { category: any }) {
   const iconProps = { className: "h-16 w-16 text-white" };
   
   // Map category names to icons
-  const categoryIcons: { [key: string]: JSX.Element } = {
+ const categoryIcons: Record<string, React.ReactNode> = {
+
     'wires': <CableIcon {...iconProps} />,
     'cables': <CableIcon {...iconProps} />,
     'switches': <SwitchIcon {...iconProps} />,
