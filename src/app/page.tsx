@@ -10,7 +10,7 @@ import { FeatureCard } from '@/components/home/FeatureCard';
 export default async function Home() {
   const [categories, featuredProducts] = await Promise.all([
     getCategories(),
-    getProducts({ featured: true, limit: 8 })
+    getProducts({ featured: true, limit: '8' })
   ]);
 
   const activeCategories = categories.filter((cat: any) => cat.isActive);

@@ -74,7 +74,7 @@ export default function DashboardLayout({
             <nav className="mt-8 px-2 space-y-1">
               {navigation.map((item) => {
                 const isActive = pathname === item.href;
-                return (
+                return (  
                   <Link
                     key={item.name}
                     href={item.href}

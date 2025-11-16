@@ -17,7 +17,7 @@ export function Header() {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch('/api/categories');
+      const response = await fetch('/categories');
       const data = await response.json();
       if (data.categories) {
         setCategories(data.categories.filter((cat: any) => cat.isActive));

@@ -1,5 +1,38 @@
 'use server';
 
+export async function getCategories() {
+  try {
+    // Use the correct port - your app is running on 3000
+    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+    const apiUrl = `${baseUrl}/api/categories?includeProductsCount=true`;
+    
+    console.log('🔄 Fetching categories from:', apiUrl);
+    
+    const response = await fetch(apiUrl, {
+      cache: 'no-store',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    console.log('📡 Categories API Response status:', response.status);
+
+    if (!response.ok) {
+      console.error('❌ Categories API response not OK:', response.status);
+      return [];
+    }
+
+    const data = await response.json();
+    console.log('✅ Categories API success, found:', data.categories?.length, 'categories');
+    
+    return data.categories || [];
+    
+  } catch (error) {
+    console.error('💥 Error fetching categories:', error);
+    return [];
+  }
+}
+
 export async function getProducts(params?: {
   category?: string;
   search?: string;
@@ -15,68 +48,38 @@ export async function getProducts(params?: {
     if (params?.limit) searchParams.append('limit', params.limit || '24');
     if (params?.featured) searchParams.append('featured', 'true');
 
+    // Use the correct port - your app is running on 3000
     const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
-    const response = await fetch(`${baseUrl}/api/products?${searchParams}`, {
+    const apiUrl = `${baseUrl}/api/products?${searchParams}`;
+    
+    console.log('🔄 Fetching products from:', apiUrl);
+
+    const response = await fetch(apiUrl, {
       cache: 'no-store',
       headers: {
         'Content-Type': 'application/json',
       },
     });
 
+    console.log('📡 Products API Response status:', response.status);
+
     if (!response.ok) {
-      console.error('API response not OK:', response.status, response.statusText);
+      console.error('❌ Products API response not OK:', response.status);
       return [];
     }
 
-    // Check if response is JSON
-    const contentType = response.headers.get('content-type');
-    if (!contentType || !contentType.includes('application/json')) {
-      console.error('Response is not JSON:', contentType);
-      return [];
-    }
-
-    const text = await response.text();
+    const data = await response.json();
+    console.log('✅ Products API success, found:', data.products?.length, 'products');
     
-    // Check if text is valid JSON
-    if (!text.trim()) {
-      console.error('Empty response');
-      return [];
-    }
-
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch (parseError) {
-      console.error('JSON parse error:', parseError, 'Response text:', text);
-      return [];
-    }
-
-    const products = data.products || [];
+    return data.products || [];
     
-    // Filter active products only for user side and ensure they have required fields
-    return products
-      .filter((product: any) => product.isActive)
-      .map((product: any) => ({
-        ...product,
-        rating: product.rating || 0,
-        reviewCount: product.reviewCount || 0,
-        stock: product.stock || 0,
-        images: product.images || [],
-        features: product.features || [],
-        specifications: product.specifications || {},
-        // Ensure category is properly structured
-        category: product.category ? {
-          _id: product.category._id,
-          name: product.category.name,
-          slug: product.category.slug
-        } : null
-      }));
   } catch (error) {
-    console.error('Error fetching products:', error);
+    console.error('💥 Error fetching products:', error);
     return [];
   }
 }
 
+// Keep other functions the same...
 export async function getProductBySlug(slug: string) {
   try {
     const products = await getProducts();
@@ -85,48 +88,6 @@ export async function getProductBySlug(slug: string) {
   } catch (error) {
     console.error('Error fetching product:', error);
     return null;
-  }
-}
-
-export async function getCategories() {
-  try {
-    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
-    const response = await fetch(`${baseUrl}/api/categories`, {
-      cache: 'no-store',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      console.error('Categories API response not OK:', response.status);
-      return [];
-    }
-
-    const contentType = response.headers.get('content-type');
-    if (!contentType || !contentType.includes('application/json')) {
-      console.error('Categories response is not JSON');
-      return [];
-    }
-
-    const data = await response.json();
-    const categories = data.categories || [];
-    
-    // Get products count for each category
-    const categoriesWithCounts = await Promise.all(
-      categories.map(async (category: any) => {
-        const products = await getProducts({ category: category.slug });
-        return {
-          ...category,
-          productsCount: products.length
-        };
-      })
-    );
-    
-    return categoriesWithCounts;
-  } catch (error) {
-    console.error('Error fetching categories:', error);
-    return [];
   }
 }
 
